@@ -62,12 +62,40 @@ func TestCreateQueue(t *testing.T) {
 		t.Log("expected error due to blank name, but none recieved")
 		t.FailNow()
 	}
-
 }
 
 func TestDeleteQueue(t *testing.T) {
-	// TODO
-	// TODO also make git repo!
+	ctrl := gomock.NewController(t)
+	man := mock_manager.NewMockIQueueManager(ctrl)
+	qa := NewQueueAPI(man)
+
+	qreq := QueueRequest{
+		Name:    "queue",
+		Order:   "fifo",
+		Timeout: 100,
+	}
+	man.EXPECT().DeleteQueue(qreq.Name).Times(1)
+	jData, _ := json.Marshal(qreq)
+	request, _ := http.NewRequest(http.MethodPost, "", bytes.NewReader(jData))
+	_, err := qa.DeleteQueue(request)
+	if err != nil {
+		t.Log("unexepcted error returned from DeleteQueue")
+		t.FailNow()
+	}
+
+	qreq = QueueRequest{
+		Name:    "",
+		Order:   "fifo",
+		Timeout: 100,
+	}
+	man.EXPECT().DeleteQueue(qreq.Name).Times(0)
+	jData, _ = json.Marshal(qreq)
+	request, _ = http.NewRequest(http.MethodPost, "", bytes.NewReader(jData))
+	_, err = qa.DeleteQueue(request)
+	if err == nil {
+		t.Log("expected error due to blank name, but none recieved")
+		t.FailNow()
+	}
 }
 
 func getSampleQueues(ctrl *gomock.Controller) map[string]manager.IQueue {
