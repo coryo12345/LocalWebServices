@@ -1,0 +1,49 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "LocalWebServices Queue",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://0.0.0.0/"
+        }
+    ],
+    "paths": {
+        "/queues": {
+            "get": {
+                "description": "Fetch All Available Queues",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "put": {
+                "description": "Create a new Queue",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a queue",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {},
+        "responses": {},
+        "parameters": {},
+        "requestBodies": {}
+    }
+}

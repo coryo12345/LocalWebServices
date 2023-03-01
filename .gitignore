@@ -1,0 +1,3 @@
+.env
+
+queue/**/mocks/*_mock.go
