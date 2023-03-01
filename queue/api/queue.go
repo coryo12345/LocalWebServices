@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -69,7 +68,7 @@ func (q *QueueAPI) CreateQueue(r *http.Request) ([]byte, *APIError) {
 	}
 
 	log.Printf("Created queue %s\n", queueReq.Name)
-	return []byte(fmt.Sprintf("created queue %s", queueReq.Name)), nil
+	return []byte("{}"), nil
 }
 
 func (q *QueueAPI) DeleteQueue(r *http.Request) ([]byte, *APIError) {
@@ -94,5 +93,5 @@ func (q *QueueAPI) DeleteQueue(r *http.Request) ([]byte, *APIError) {
 	}
 
 	log.Printf("Deleted queue %s\n", queueReq.Name)
-	return []byte(fmt.Sprintf("deleted queue %s", queueReq.Name)), nil
+	return []byte("{}"), nil
 }

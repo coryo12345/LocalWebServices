@@ -43,10 +43,13 @@ func TestCreateQueue(t *testing.T) {
 	man.EXPECT().AddQueue(qreq.Name, qreq.Order, qreq.Timeout).Times(1)
 	jData, _ := json.Marshal(qreq)
 	request, _ := http.NewRequest(http.MethodPost, "", bytes.NewReader(jData))
-	_, err := qa.CreateQueue(request)
+	byteData, err := qa.CreateQueue(request)
 	if err != nil {
 		t.Log("unexepcted error returned from CreateQueue")
 		t.FailNow()
+	}
+	if string(byteData) != "{}" {
+		t.Error(`expected return value to be "{}"`)
 	}
 
 	qreq = QueueRequest{
@@ -77,10 +80,13 @@ func TestDeleteQueue(t *testing.T) {
 	man.EXPECT().DeleteQueue(qreq.Name).Times(1)
 	jData, _ := json.Marshal(qreq)
 	request, _ := http.NewRequest(http.MethodPost, "", bytes.NewReader(jData))
-	_, err := qa.DeleteQueue(request)
+	byteData, err := qa.DeleteQueue(request)
 	if err != nil {
 		t.Log("unexepcted error returned from DeleteQueue")
 		t.FailNow()
+	}
+	if string(byteData) != "{}" {
+		t.Error(`expected return value to be "{}"`)
 	}
 
 	qreq = QueueRequest{

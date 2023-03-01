@@ -21,12 +21,14 @@ func NewApiError(msg string, code int) *APIError {
 }
 
 type ResourceAPI struct {
-	QueueApi QueueAPI
+	QueueApi   QueueAPI
+	MessageApi MessageAPI
 }
 
 func NewResourceAPI(manager manager.IQueueManager) *ResourceAPI {
 	api := &ResourceAPI{
-		QueueApi: NewQueueAPI(manager),
+		QueueApi:   NewQueueAPI(manager),
+		MessageApi: NewMessageAPI(manager),
 	}
 	return api
 }
@@ -50,7 +52,27 @@ func (q *ResourceAPI) StartApi() {
 }
 
 func (api *ResourceAPI) MessageHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Received request: %s /message\n", r.Method)
+	var data []byte
+	var err *APIError
+	switch r.Method {
+	case "GET":
+		data, err = api.MessageApi.GetMessages()
+	case "PUT":
+		data, err = api.MessageApi.PublishMessage()
+	case "DELETE":
+		data, err = api.MessageApi.DeleteMessage()
+	default:
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
 
+	if err != nil {
+		http.Error(w, err.err.Error(), err.code)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(data)
 }
 
 func (api *ResourceAPI) QueueHandler(w http.ResponseWriter, r *http.Request) {
