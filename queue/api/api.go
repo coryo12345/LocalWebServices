@@ -3,10 +3,17 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"queue/manager"
+)
+
+const (
+	ENV_API_PORT     = "API_PORT"
+	DEFAULT_API_PORT = "8080"
 )
 
 type APIError struct {
@@ -49,9 +56,14 @@ func (q *ResourceAPI) StartApi() {
 	// PUT - publish a message
 	http.HandleFunc("/message", q.MessageHandler)
 
-	// TODO: move port into env var
-	log.Printf("Starting Queue API on :8080\n")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	apiPort := os.Getenv(ENV_API_PORT)
+	if apiPort == "" {
+		apiPort = DEFAULT_API_PORT
+	}
+	address := fmt.Sprintf(":%s", apiPort)
+
+	log.Printf("Starting Queue API on %s\n", address)
+	log.Fatal(http.ListenAndServe(address, nil))
 }
 
 func (api *ResourceAPI) MessageHandler(w http.ResponseWriter, r *http.Request) {
