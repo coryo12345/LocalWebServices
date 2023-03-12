@@ -19,14 +19,18 @@ func TestGetAllQueues(t *testing.T) {
 
 	qa := NewQueueAPI(man)
 
-	const expected = `["a"]`
-	bdata, err := qa.GetAllQueues()
-	if err != nil {
+	resp, apierr := qa.GetAllQueues()
+	if apierr != nil {
 		t.Log("should not return an error")
 		t.FailNow()
 	}
-	if string(bdata) != expected {
-		t.Errorf("expected %s but received %s", expected, string(bdata))
+
+	if len(resp) != 1 {
+		t.Error("expected response length to be 1 queue")
+	}
+
+	if resp[0].Name != "a" || resp[0].Order != "fifo" {
+		t.Error("expected name = 'a' and order = 'fifo'")
 	}
 }
 
@@ -35,7 +39,7 @@ func TestCreateQueue(t *testing.T) {
 	man := mock_manager.NewMockIQueueManager(ctrl)
 	qa := NewQueueAPI(man)
 
-	qreq := QueueRequest{
+	qreq := CreateQueueRequest{
 		Name:    "queue",
 		Order:   "fifo",
 		Timeout: 100,
@@ -43,16 +47,12 @@ func TestCreateQueue(t *testing.T) {
 	man.EXPECT().AddQueue(qreq.Name, qreq.Order, qreq.Timeout).Times(1)
 	jData, _ := json.Marshal(qreq)
 	request, _ := http.NewRequest(http.MethodPost, "", bytes.NewReader(jData))
-	byteData, err := qa.CreateQueue(request)
+	_, err := qa.CreateQueue(request)
 	if err != nil {
-		t.Log("unexepcted error returned from CreateQueue")
-		t.FailNow()
-	}
-	if string(byteData) != "{}" {
-		t.Error(`expected return value to be "{}"`)
+		t.Error("expected response to be defined")
 	}
 
-	qreq = QueueRequest{
+	qreq = CreateQueueRequest{
 		Name:    "",
 		Order:   "fifo",
 		Timeout: 100,
@@ -72,7 +72,7 @@ func TestDeleteQueue(t *testing.T) {
 	man := mock_manager.NewMockIQueueManager(ctrl)
 	qa := NewQueueAPI(man)
 
-	qreq := QueueRequest{
+	qreq := CreateQueueRequest{
 		Name:    "queue",
 		Order:   "fifo",
 		Timeout: 100,
@@ -80,16 +80,13 @@ func TestDeleteQueue(t *testing.T) {
 	man.EXPECT().DeleteQueue(qreq.Name).Times(1)
 	jData, _ := json.Marshal(qreq)
 	request, _ := http.NewRequest(http.MethodPost, "", bytes.NewReader(jData))
-	byteData, err := qa.DeleteQueue(request)
+	_, err := qa.DeleteQueue(request)
 	if err != nil {
 		t.Log("unexepcted error returned from DeleteQueue")
 		t.FailNow()
 	}
-	if string(byteData) != "{}" {
-		t.Error(`expected return value to be "{}"`)
-	}
 
-	qreq = QueueRequest{
+	qreq = CreateQueueRequest{
 		Name:    "",
 		Order:   "fifo",
 		Timeout: 100,
@@ -106,6 +103,10 @@ func TestDeleteQueue(t *testing.T) {
 
 func getSampleQueues(ctrl *gomock.Controller) map[string]manager.IQueue {
 	m := make(map[string]manager.IQueue)
-	m["a"] = mock_manager.NewMockIQueue(ctrl)
+	mq := mock_manager.NewMockIQueue(ctrl)
+	mq.EXPECT().GetName().Return("a")
+	mq.EXPECT().GetOrder().Return("fifo")
+	mq.EXPECT().GetVisibilityTimeout().Return(100)
+	m["a"] = mq
 	return m
 }

@@ -33,8 +33,8 @@ func TestReadConfigFile(t *testing.T) {
 		t.Log("Expected queue 'myqueue' to have order of 'fifo'")
 		t.Fail()
 	}
-	if yconfig.Queues["myqueue"].Visibility_timeout != 20000 {
-		t.Log("Expected queue 'myqueue' to have persistent = true")
+	if yconfig.Queues["myqueue"].Visibility_timeout != 5000 {
+		t.Log("Expected queue 'myqueue' to have visibility timeout = 5000")
 		t.Fail()
 	}
 }
@@ -82,7 +82,7 @@ func TestGetConfig(t *testing.T) {
 		t.Fail()
 	}
 	if actual.Queues[0].Name != "myqueue" ||
-		actual.Queues[0].Visibility_timeout != 20000 ||
+		actual.Queues[0].Visibility_timeout != 5000 ||
 		actual.Queues[0].Order != "fifo" {
 		t.Log("queue 'myqueue' does not match provided yaml config")
 		t.Fail()

@@ -50,6 +50,21 @@ func TestGetQueues(t *testing.T) {
 	}
 }
 
+func TestGetQueue(t *testing.T) {
+	qm := NewQueueManager()
+	qm.queues["queue1"] = &Queue{}
+
+	queue := qm.GetQueue("queue1")
+	if queue == nil {
+		t.Error("expected queue but received nil")
+	}
+
+	queue = qm.GetQueue("queue2")
+	if queue != nil {
+		t.Errorf("expected nil but received %s", queue)
+	}
+}
+
 func TestDeleteQueue(t *testing.T) {
 	qm := NewQueueManager()
 	err := qm.DeleteQueue("myqueue")

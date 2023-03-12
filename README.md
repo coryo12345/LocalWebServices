@@ -29,7 +29,5 @@ The ideal use case would be to use these containers alongside another project, v
 ### Queue Service
 * Locked polling 
   * i.e make sure only one client can detect an event
-* Define queues as persistent or not
-  * (do they remember state across restarts)
 * Needs a UI to poll / send / delete events
 * make a JS sdk?

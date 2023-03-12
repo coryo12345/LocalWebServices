@@ -19,43 +19,56 @@ func NewQueueAPI(man manager.IQueueManager) QueueAPI {
 	return qapi
 }
 
-func (q *QueueAPI) GetAllQueues() ([]byte, *APIError) {
-	queueMap := q.Manager.GetQueues()
-	keys := make([]string, 0, len(queueMap))
-	for k := range queueMap {
-		keys = append(keys, k)
-	}
-
-	jsonData, err := json.Marshal(keys)
-	if err != nil {
-		return nil, NewApiError("Unable to retrieve queues", http.StatusInternalServerError)
-	}
-	return jsonData, nil
+// ==========================================================
+type GetQueueResponse struct {
+	Name              string
+	Order             string
+	VisibilityTimeout int
 }
 
-type QueueRequest struct {
+func (q *QueueAPI) GetAllQueues() ([]GetQueueResponse, *APIError) {
+	queueMap := q.Manager.GetQueues()
+
+	queues := make([]GetQueueResponse, 0, len(queueMap))
+	for _, queue := range queueMap {
+		qr := GetQueueResponse{
+			Name:              queue.GetName(),
+			Order:             queue.GetOrder(),
+			VisibilityTimeout: queue.GetVisibilityTimeout(),
+		}
+		queues = append(queues, qr)
+	}
+
+	return queues, nil
+}
+
+// ======================================================
+
+type CreateQueueRequest struct {
 	Name    string `json:"name"`
 	Order   string `json:"order"`
 	Timeout int    `json:"timeout"`
 }
 
-func (q *QueueAPI) CreateQueue(r *http.Request) ([]byte, *APIError) {
+type CreateQueueResponse struct{}
+
+func (q *QueueAPI) CreateQueue(r *http.Request) (CreateQueueResponse, *APIError) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		return nil, NewApiError("Error reading request body", http.StatusInternalServerError)
+		return CreateQueueResponse{}, NewApiError("Error reading request body", http.StatusInternalServerError)
 	}
-	queueReq := QueueRequest{
+	queueReq := CreateQueueRequest{
 		Name:    "",
 		Order:   "",
 		Timeout: -1,
 	}
 	err = json.Unmarshal(body, &queueReq)
 	if err != nil {
-		return nil, NewApiError("Incorrect request body", http.StatusBadRequest)
+		return CreateQueueResponse{}, NewApiError("Incorrect request body", http.StatusBadRequest)
 	}
 
 	if queueReq.Name == "" {
-		return nil, NewApiError("Name must be at least 1 character", http.StatusBadRequest)
+		return CreateQueueResponse{}, NewApiError("Name must be at least 1 character", http.StatusBadRequest)
 	}
 
 	if queueReq.Timeout == -1 {
@@ -64,34 +77,45 @@ func (q *QueueAPI) CreateQueue(r *http.Request) ([]byte, *APIError) {
 
 	_, err = q.Manager.AddQueue(queueReq.Name, queueReq.Order, queueReq.Timeout)
 	if err != nil {
-		return nil, NewApiError(err.Error(), http.StatusBadRequest)
+		return CreateQueueResponse{}, NewApiError(err.Error(), http.StatusBadRequest)
 	}
 
 	log.Printf("Created queue %s\n", queueReq.Name)
-	return []byte("{}"), nil
+	return CreateQueueResponse{}, nil
 }
 
-func (q *QueueAPI) DeleteQueue(r *http.Request) ([]byte, *APIError) {
+// ===========================================
+
+type DeleteQueueRequest struct {
+	Name    string `json:"name"`
+	Order   string `json:"order"`
+	Timeout int    `json:"timeout"`
+}
+
+// not really needed at this point
+type DeleteQueueResponse struct{}
+
+func (q *QueueAPI) DeleteQueue(r *http.Request) (DeleteQueueResponse, *APIError) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		return nil, NewApiError("Error reading request body", http.StatusInternalServerError)
+		return DeleteQueueResponse{}, NewApiError("Error reading request body", http.StatusInternalServerError)
 	}
 
-	queueReq := QueueRequest{}
+	queueReq := DeleteQueueRequest{}
 	err = json.Unmarshal(body, &queueReq)
 	if err != nil {
-		return nil, NewApiError("Incorrect request body", http.StatusBadRequest)
+		return DeleteQueueResponse{}, NewApiError("Incorrect request body", http.StatusBadRequest)
 	}
 
 	if queueReq.Name == "" {
-		return nil, NewApiError("Name must be at least 1 character", http.StatusBadRequest)
+		return DeleteQueueResponse{}, NewApiError("Name must be at least 1 character", http.StatusBadRequest)
 	}
 
 	err = q.Manager.DeleteQueue(queueReq.Name)
 	if err != nil {
-		return nil, NewApiError(err.Error(), http.StatusBadRequest)
+		return DeleteQueueResponse{}, NewApiError(err.Error(), http.StatusBadRequest)
 	}
 
 	log.Printf("Deleted queue %s\n", queueReq.Name)
-	return []byte("{}"), nil
+	return DeleteQueueResponse{}, nil
 }

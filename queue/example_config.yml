@@ -3,7 +3,7 @@ version: 1
 queues:
   myqueue:
     order: fifo
-    visibility_timeout: 20000
+    visibility_timeout: 5000
 
   mystackqueue:
     order: filo

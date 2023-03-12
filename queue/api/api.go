@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -34,6 +35,8 @@ func NewResourceAPI(manager manager.IQueueManager) *ResourceAPI {
 }
 
 func (q *ResourceAPI) StartApi() {
+	// TODO document these endpoint
+
 	// GET - get all queues
 	// PUT - create queue
 	// DELETE - delete queue
@@ -53,15 +56,15 @@ func (q *ResourceAPI) StartApi() {
 
 func (api *ResourceAPI) MessageHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received request: %s /message\n", r.Method)
-	var data []byte
+	var data interface{} // will be a pointer to some marshalable data
 	var err *APIError
 	switch r.Method {
 	case "GET":
-		data, err = api.MessageApi.GetMessages()
+		data, err = api.MessageApi.GetMessages(r)
 	case "PUT":
-		data, err = api.MessageApi.PublishMessage()
+		data, err = api.MessageApi.PublishMessage(r)
 	case "DELETE":
-		data, err = api.MessageApi.DeleteMessage()
+		data, err = api.MessageApi.DeleteMessage(r)
 	default:
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -71,13 +74,20 @@ func (api *ResourceAPI) MessageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.err.Error(), err.code)
 		return
 	}
+
+	bytedata, err2 := marshalData(data)
+	if err2 != nil {
+		http.Error(w, err2.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(data)
+	w.Write(bytedata)
 }
 
 func (api *ResourceAPI) QueueHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received request: %s /queues\n", r.Method)
-	var data []byte
+	var data interface{}
 	var err *APIError
 	switch r.Method {
 	case "GET":
@@ -95,6 +105,27 @@ func (api *ResourceAPI) QueueHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.err.Error(), err.code)
 		return
 	}
+
+	bytedata, err2 := marshalData(data)
+	if err2 != nil {
+		http.Error(w, err2.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(data)
+	w.Write(bytedata)
+}
+
+func marshalData(data interface{}) ([]byte, error) {
+	var bytedata []byte
+	if data != nil {
+		var err error
+		bytedata, err = json.Marshal(data)
+		if err != nil {
+			return nil, errors.New("internal server error")
+		}
+	} else {
+		bytedata = make([]byte, 0)
+	}
+	return bytedata, nil
 }
