@@ -45,3 +45,4 @@ By using a synchronized polling queue like AWS SQS, applications can decouple th
 
 ## Things to do
 * Add option to disable synchronization? would allow for "global" events
+* Make a JS SDK
