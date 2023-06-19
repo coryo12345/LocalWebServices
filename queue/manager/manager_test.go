@@ -34,6 +34,12 @@ func TestAddQueueWithMessages(t *testing.T) {
 		t.Fail()
 	}
 
+	_, err = qm.AddQueueWithMessages("", "fifo", 100, messages)
+	if err == nil {
+		t.Log("should fail when provided a non-alphanumeric queue name")
+		t.Fail()
+	}
+
 	_, err = qm.AddQueueWithMessages("b", "abc", 100, messages)
 	if err == nil {
 		t.Log("should fail when provided a duplicate queue name")

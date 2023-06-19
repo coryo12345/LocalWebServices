@@ -6,7 +6,8 @@ import (
 )
 
 const (
-	exampleConfig = "../example_config.yml"
+	exampleConfig           = "../example_config.yml"
+	logExpectVersionMessage = "Expected version to be 1"
 )
 
 func TestGetConfigFileName(t *testing.T) {
@@ -22,7 +23,7 @@ func TestGetConfigFileName(t *testing.T) {
 func TestReadConfigFile(t *testing.T) {
 	yconfig := readConfigFile(exampleConfig)
 	if yconfig.Version != 1 {
-		t.Log("Expected version to be 1")
+		t.Log(logExpectVersionMessage)
 		t.Fail()
 	}
 	if len(yconfig.Queues) != 2 {
@@ -50,7 +51,7 @@ func TestConvertYamlToQueueConfig(t *testing.T) {
 	}
 	actual := convertYamlToQueueConfig(&yconfig)
 	if actual.Version != 1 {
-		t.Log("Expected version to be 1")
+		t.Log(logExpectVersionMessage)
 		t.Fail()
 	}
 	if len(actual.Queues) != 1 {
@@ -74,7 +75,7 @@ func TestGetConfig(t *testing.T) {
 		return
 	}
 	if actual.Version != 1 {
-		t.Log("Expected version to be 1")
+		t.Log(logExpectVersionMessage)
 		t.Fail()
 	}
 	if len(actual.Queues) != 2 {

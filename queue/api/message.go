@@ -1,7 +1,5 @@
 package api
 
-// TODO tests for this
-
 import (
 	"encoding/json"
 	"fmt"

@@ -3,10 +3,8 @@ package manager
 import (
 	"errors"
 	"fmt"
-	"strings"
+	"regexp"
 )
-
-// TODO can I use gostub instead of generating mocks?
 
 //go:generate mockgen -destination=./mocks/manager_mock.go . IQueueManager
 type IQueueManager interface {
@@ -37,9 +35,9 @@ func (q *QueueManager) AddQueueWithMessages(name string, order string, timeout i
 		return nil, errors.New("order should be one of: ['fifo', 'filo'] ")
 	}
 
-	// TODO use a regex match for alphanumeric, dash, underscore
-	if strings.Contains(name, " ") {
-		return nil, errors.New("queue name must not contain spaces")
+	matched, err := regexp.Match(`^[0-9a-zA-Z_\-]+$`, []byte(name))
+	if err != nil || !matched {
+		return nil, errors.New("queue name must be alphanumeric with dashes or underscores")
 	}
 
 	messages := make([]*Message, len(rawMessages))

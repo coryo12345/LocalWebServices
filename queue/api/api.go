@@ -42,7 +42,7 @@ func NewResourceAPI(manager manager.IQueueManager) *ResourceAPI {
 }
 
 func (q *ResourceAPI) StartApi() {
-	// TODO document these endpoint
+	// TODO document these endpoints
 
 	// GET - get all queues
 	// PUT - create queue
