@@ -1,3 +1,5 @@
 .env
 
 queue/**/mocks/*_mock.go
+
+node_modules

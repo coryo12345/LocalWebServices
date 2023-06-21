@@ -15,6 +15,11 @@ const (
 )
 
 func StartApi() {
+	// TODO:
+	// DELETE /property
+	// GET /property
+	// POST /property
+	// GET / ... all key / values
 	http.HandleFunc("/", handleRequest)
 
 	apiPort := os.Getenv(ENV_API_PORT)
