@@ -22,13 +22,23 @@ export function PropertyManager(url: string) {
     key: string,
     value: string
   ): Promise<string | null> {
-    // TODO
-    return "";
+    try {
+      const resp = await client.post<string>(
+        `/property?key=${key}&value=${value}`
+      );
+      return resp.data;
+    } catch (err) {
+      return null;
+    }
   }
 
   async function deleteProperty(key: string): Promise<string | null> {
-    // TODO
-    return "";
+    try {
+      const resp = await client.delete<string>(`/property?key=${key}`);
+      return resp.data;
+    } catch (err) {
+      return null;
+    }
   }
 
   async function getAllProperties(): Promise<Property[] | null> {
