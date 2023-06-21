@@ -3,7 +3,7 @@ import { render } from "preact";
 import { App } from "./app.tsx";
 import "./index.css";
 
-// dropdown
+// menu
 import "@szhsin/react-menu/dist/index.css";
 import "@szhsin/react-menu/dist/transitions/slide.css";
 
