@@ -2,9 +2,12 @@
   "name": "localwebservices-sdk",
   "version": "1.0.0",
   "description": "js sdk for localwebservices",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "build-dev": "./link-sdk.sh"
   },
   "author": "",
   "license": "ISC",

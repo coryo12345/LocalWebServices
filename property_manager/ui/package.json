@@ -13,7 +13,8 @@
     "@szhsin/react-menu": "^4.0.0",
     "preact": "^10.13.2",
     "react": "npm:@preact/compat",
-    "react-dom": "npm:@preact/compat"
+    "react-dom": "npm:@preact/compat",
+    "localwebservices-sdk": "^1.0.0"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.5.0",

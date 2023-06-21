@@ -1,5 +1,3 @@
+import PropertyManager from "./property_manager";
 
-
-export default {
-
-}
+export { PropertyManager };

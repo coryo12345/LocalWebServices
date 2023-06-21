@@ -1,9 +1,15 @@
-import { computed, signal } from "@preact/signals";
+import { computed, signal, useSignalEffect } from "@preact/signals";
 import { Property } from "./models";
 import { createContext } from "preact";
+import { PropertyManager } from "localwebservices-sdk";
 
 export function createState() {
   const url = signal("http://localhost:8081");
+  const client = signal({} as ReturnType<typeof PropertyManager>);
+  useSignalEffect(() => {
+    client.value = PropertyManager(url.value);
+  });
+
   const searchText = signal("");
   const searchKey = signal(true);
   const searchValue = signal(false);

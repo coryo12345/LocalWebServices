@@ -3,3 +3,4 @@
 queue/**/mocks/*_mock.go
 
 node_modules
+sdk/dist/
