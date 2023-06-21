@@ -17,8 +17,8 @@ const (
 )
 
 func StartApi() {
-	http.HandleFunc("/", handleAllRequest)
-	http.HandleFunc("/property", handlePropertyRequest)
+	http.HandleFunc("/", CORS(handleAllRequest))
+	http.HandleFunc("/property", CORS(handlePropertyRequest))
 
 	apiPort := os.Getenv(ENV_API_PORT)
 	if apiPort == "" {

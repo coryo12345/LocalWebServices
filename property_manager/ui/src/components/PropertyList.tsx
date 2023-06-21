@@ -18,10 +18,12 @@ export function PropertyList() {
   return (
     <>
       <FilterBar onAction={handleAction} />
-      <DataTable
-        items={state.filteredProperties.value}
-        onSelect={(items) => (selectedProperties.value = items)}
-      />
+      <div class="mx-2">
+        <DataTable
+          items={state.filteredProperties.value}
+          onSelect={(items) => (selectedProperties.value = items)}
+        />
+      </div>
     </>
   );
 }

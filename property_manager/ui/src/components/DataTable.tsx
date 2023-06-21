@@ -23,7 +23,7 @@ export function DataTable(props: Props) {
   }
 
   return (
-    <table class="table-auto">
+    <table class="table-auto w-full">
       <thead className="bg-slate-200 border border-black">
         <tr>
           <th></th>

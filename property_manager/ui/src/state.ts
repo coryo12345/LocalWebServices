@@ -27,19 +27,7 @@ export function createState() {
   });
 
   async function fetchProperties() {
-    // TODO
-    const promiseTimeout = (timeout: number) => {
-      return new Promise((res) => {
-        setTimeout(res, timeout);
-      });
-    };
-
-    await promiseTimeout(500);
-    properties.value = [
-      { key: "alliance.captial", value: "stormwind" },
-      { key: "horde.capital", value: "orgimmar" },
-      { key: "dragonisles", value: "valdrakken" },
-    ];
+    properties.value = await client.value.getAllProperties();
   }
 
   return {
