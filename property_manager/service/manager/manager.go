@@ -19,6 +19,11 @@ type PropertyManager struct {
 	filename string
 }
 
+type Property struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
 func NewPropertyManager() *PropertyManager {
 	return &PropertyManager{}
 }
@@ -53,6 +58,11 @@ func (sm *PropertyManager) Init() error {
 	}
 
 	return nil
+}
+
+func (sm *PropertyManager) GetAllProperties() ([]Property, error) {
+	values, err := getValueList(sm.filename)
+	return values, err
 }
 
 func (sm *PropertyManager) GetProperty(key string) (string, error) {
@@ -90,6 +100,30 @@ func (sm *PropertyManager) SetProperty(key string, value string) (string, error)
 	return prev, nil
 }
 
+func (sm *PropertyManager) DeleteProperty(key string) (string, error) {
+	valueMap, err := getValueMap(sm.filename)
+	if err != nil {
+		return "", err
+	}
+	prev := valueMap[key]
+
+	// write new value
+	delete(valueMap, key)
+
+	// convert map to string: a=b\n
+	b := new(bytes.Buffer)
+	for key, value := range valueMap {
+		fmt.Fprintf(b, "%s=%s\n", key, value)
+	}
+
+	err = os.WriteFile(sm.filename, b.Bytes(), 0666)
+	if err != nil {
+		return prev, err
+	}
+
+	return prev, nil
+}
+
 func getValueMap(filename string) (map[string]string, error) {
 	valueMap := make(map[string]string)
 
@@ -112,4 +146,32 @@ func getValueMap(filename string) (map[string]string, error) {
 	}
 
 	return valueMap, nil
+}
+
+func getValueList(filename string) ([]Property, error) {
+	list := make([]Property, 0)
+
+	file, err := os.Open(filename)
+	if err != nil {
+		return list, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for i := 1; scanner.Scan(); i++ {
+		txt := scanner.Text()
+		before, after, found := strings.Cut(txt, "=")
+		if found {
+			property := Property{
+				Key:   before,
+				Value: after,
+			}
+			list = append(list, property)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return list, err
+	}
+
+	return list, nil
 }
