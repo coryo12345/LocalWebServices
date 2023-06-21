@@ -2,6 +2,8 @@ import { useSignal } from "@preact/signals";
 import { Property } from "localwebservices-sdk";
 import { useEffect } from "preact/hooks";
 
+export type ListAction = "delete" | "add" | "update";
+
 interface Item extends Property {
   selected?: boolean;
 }

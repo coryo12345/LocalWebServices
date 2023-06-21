@@ -2,6 +2,20 @@
 A collection of containers meant to imitate common cloud services that may be used as supporting containers in early development stages.
 
 The ideal use case would be to use these containers alongside another project, via docker compose.
+
+## Running Locally
+Each service has it's own directory in this repository. Each directory has a `service/` and a `ui/` child directory.   
+The service directory holds the code to run each service. See the README for that particular service for instructions. 
+### Running the Testing UI for each service
+1. Build the sdk in the `sdk/` directory
+```sh
+cd sdk && npm install && npm run build
+```
+2. Then in the `ui/` folder for the service you want to test, start the UI.
+```sh
+npm install && npm run dev
+```
+
 ## Services
 ### Serverless Functions (Stateless Functions)
 * all in js/ts

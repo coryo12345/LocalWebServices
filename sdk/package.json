@@ -6,8 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "build-dev": "./link-sdk.sh"
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
