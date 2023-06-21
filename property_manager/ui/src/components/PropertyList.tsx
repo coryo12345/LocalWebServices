@@ -2,8 +2,9 @@ import { useContext } from "preact/hooks";
 import { DataTable } from "./DataTable";
 import { AppState } from "../state";
 import { useSignal } from "@preact/signals";
-import { ListAction, Property } from "../models";
+import { ListAction } from "../models";
 import { FilterBar } from "./FilterBar";
+import type { Property } from "localwebservices-sdk";
 
 export function PropertyList() {
   const state = useContext(AppState);

@@ -1,6 +1,6 @@
 import { useSignal } from "@preact/signals";
+import { Property } from "localwebservices-sdk";
 import { useEffect } from "preact/hooks";
-import { Property } from "../models";
 
 interface Item extends Property {
   selected?: boolean;

@@ -1,6 +1,8 @@
 import axios, { AxiosInstance } from "axios";
 import { Property } from "./models";
 
+export type { Property };
+
 export function PropertyManager(url: string) {
   const client: AxiosInstance = axios.create({
     baseURL: url,
