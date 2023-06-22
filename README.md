@@ -30,6 +30,7 @@ npm install && npm run dev
 * map urls to serverless functions from above service
 
 ### Secrets Manager
+* TODO: makr this as completed and give more details
 * Key-Value store defined in config file
 * retrieved with https requests?
   * make an sdk to wrap this?
