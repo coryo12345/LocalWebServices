@@ -5,4 +5,4 @@ alliance.gilneas.name=The Ruins of Gilneas
 horde.capital=orgrimmar
 horde.orgrimmar.name=Orgrimmar
 horde.silvermoon.name=Silvermoon City
-horde.tauren.city=Thunder Bluff
+horde.tauren.name=Thunder Bluff
