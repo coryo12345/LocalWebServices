@@ -27,7 +27,7 @@ export function DataTable(props: Props) {
       props.onSelect(_items.value.filter((i) => i.selected));
   }
 
-  const sortBy = useSignal("key");
+  const sortBy = useSignal("");
   const sortAsc = useSignal(true);
   function setSort(key: string) {
     if (key === sortBy.value && sortAsc.value) {
