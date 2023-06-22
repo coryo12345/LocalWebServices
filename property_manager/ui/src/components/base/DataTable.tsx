@@ -1,4 +1,4 @@
-import { useSignal } from "@preact/signals";
+import { useComputed, useSignal } from "@preact/signals";
 import { Property } from "localwebservices-sdk";
 import { useEffect } from "preact/hooks";
 
@@ -27,17 +27,54 @@ export function DataTable(props: Props) {
       props.onSelect(_items.value.filter((i) => i.selected));
   }
 
+  const sortBy = useSignal("key");
+  const sortAsc = useSignal(true);
+  function setSort(key: string) {
+    if (key === sortBy.value && sortAsc.value) {
+      sortAsc.value = false;
+    } else if (key === sortBy.value) {
+      sortBy.value = "";
+    } else {
+      sortBy.value = key;
+      sortAsc.value = true;
+    }
+  }
+  function getSortIcon(key: string) {
+    if (key === sortBy.value && sortAsc.value) {
+      return <span>&#9650;</span>;
+    } else if (key === sortBy.value) {
+      return <span>&#9660;</span>;
+    } else {
+      return <span></span>;
+    }
+  }
+
+  const sortedItems = useComputed(() => {
+    return [..._items.value].sort((a, b) => {
+      if (sortBy.value === "") return 0;
+      const aVal = (a as Record<string, any>)[sortBy.value] as string;
+      const bVal = (b as Record<string, any>)[sortBy.value] as string;
+      return sortAsc.value
+        ? aVal.localeCompare(bVal)
+        : bVal.localeCompare(aVal);
+    });
+  });
+
   return (
     <table class="table-auto w-full">
       <thead className="bg-slate-200 border border-black">
         <tr>
           <th></th>
-          <th className="py-1 px-2">Key</th>
-          <th className="py-1 px-2">Value</th>
+          <th className="py-1 px-2" onClick={() => setSort("key")}>
+            Key {getSortIcon("key")}
+          </th>
+          <th className="py-1 px-2" onClick={() => setSort("value")}>
+            Value {getSortIcon("value")}
+          </th>
         </tr>
       </thead>
       <tbody>
-        {_items.value.map((item, index) => (
+        {sortedItems.value.map((item, index) => (
           <tr className="border border-black hover:bg-slate-100">
             <td>
               <input
