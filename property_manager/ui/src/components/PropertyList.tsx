@@ -19,10 +19,10 @@ export function PropertyList() {
         emit(ADD_PROPERTY_EVENT);
         break;
       case "delete":
-        // use selectedProperties to delete items
+        // TODO use selectedProperties to delete items
         break;
       case "update":
-        // use selectedProperties to update values
+        // TODO use selectedProperties to update values
         break;
       default:
         break;
