@@ -1,11 +1,8 @@
 import { computed, signal, useSignalEffect } from "@preact/signals";
-import { createContext } from "preact";
 import { Property, PropertyManager } from "localwebservices-sdk";
-import { useEventBus } from "./utils/bus";
+import { createContext } from "preact";
 
 export function createState() {
-  const { emit } = useEventBus();
-
   const url = signal("http://localhost:8081");
 
   // ideally this client stuff would be moved into a separate service-esque file
