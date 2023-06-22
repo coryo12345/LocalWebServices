@@ -33,7 +33,6 @@ export function PropertyManager(url: string) {
   }
 
   async function deleteProperty(key: string): Promise<string | null> {
-    console.log("deleting key", key);
     try {
       const resp = await client.delete<string>(`/property?key=${key}`);
       return resp.data;

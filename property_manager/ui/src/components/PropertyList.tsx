@@ -4,6 +4,10 @@ import { useContext } from "preact/hooks";
 import { AppState } from "../state";
 import { events, useEventBus } from "../utils/bus";
 import { ADD_PROPERTY_EVENT, AddPropertyDialog } from "./AddPropertyDialog";
+import {
+  UPDATE_PROPERTY_EVENT,
+  UpdatePropertyDialog,
+} from "./UpdatePropertyDialog";
 import { FilterBar } from "./FilterBar";
 import { DataTable, ListAction } from "./base/DataTable";
 
@@ -14,23 +18,23 @@ export function PropertyList() {
   const selectedProperties = useSignal<Property[]>([]);
 
   function handleAction(action: ListAction) {
+    const keys = selectedProperties.value.map((prop) => prop.key);
     switch (action) {
       case "add":
         emit(ADD_PROPERTY_EVENT);
         break;
       case "delete":
-        deleteProperties();
+        deleteProperties(keys);
         break;
       case "update":
-        // TODO use selectedProperties to update values
+        emit(UPDATE_PROPERTY_EVENT, keys);
         break;
       default:
         break;
     }
   }
 
-  async function deleteProperties() {
-    const keys = selectedProperties.value.map((prop) => prop.key);
+  async function deleteProperties(keys: string[]) {
     const result = await state.deleteProperties(keys);
     if (result) {
       emit(events.SNACKBAR_SUCCESS, "Successfully deleted properties");
@@ -51,6 +55,7 @@ export function PropertyList() {
         />
       </div>
       <AddPropertyDialog />
+      <UpdatePropertyDialog />
     </>
   );
 }

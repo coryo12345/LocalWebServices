@@ -44,9 +44,28 @@ export function createState() {
    * @returns true if all keys were successfully deleted, false if not
    */
   async function deleteProperties(keys: string[]): Promise<boolean> {
-    const promises = [];
+    const promises: Promise<string | null>[] = [];
     for (const key of keys) {
       promises.push(client.value.deleteProperty(key));
+    }
+    const responses = await Promise.all(promises);
+    return !responses.filter((resp) => !resp).length;
+  }
+
+  async function setProperty(
+    key: string,
+    value: string
+  ): Promise<string | null> {
+    return await client.value.setProperty(key, value);
+  }
+
+  async function setProperties(
+    keys: string[],
+    value: string
+  ): Promise<boolean> {
+    const promises: Promise<string | null>[] = [];
+    for (const key of keys) {
+      promises.push(client.value.setProperty(key, value));
     }
     const responses = await Promise.all(promises);
     return !responses.filter((resp) => !resp).length;
@@ -62,6 +81,8 @@ export function createState() {
     fetchProperties,
     addProperty,
     deleteProperties,
+    setProperty,
+    setProperties,
   };
 }
 
