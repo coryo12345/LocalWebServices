@@ -13,6 +13,7 @@ interface Props {
   onSelect?: (items: Item[]) => void;
 }
 
+// TODO column sorting
 export function DataTable(props: Props) {
   const _items = useSignal<Item[]>([]);
 
@@ -22,6 +23,8 @@ export function DataTable(props: Props) {
 
   function selectHandler(index: number) {
     _items.value[index].selected = !_items.value[index].selected;
+    typeof props.onSelect === "function" &&
+      props.onSelect(_items.value.filter((i) => i.selected));
   }
 
   return (
@@ -38,7 +41,7 @@ export function DataTable(props: Props) {
           <tr className="border border-black hover:bg-slate-100">
             <td>
               <input
-                checked={item.selected}
+                checked={!!item.selected}
                 type="checkbox"
                 className="text-center mx-2 w-4 h-4"
                 onChange={() => selectHandler(index)}

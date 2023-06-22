@@ -10,12 +10,8 @@ interface Props {
 export function FilterBar(props: Props) {
   const state = useContext(AppState);
 
-  function deleteAction() {
-    typeof props.onAction === "function" && props.onAction("delete");
-  }
-
-  function addAction() {
-    typeof props.onAction === "function" && props.onAction("add");
+  function action(a: ListAction) {
+    typeof props.onAction === "function" && props.onAction(a);
   }
 
   return (
@@ -50,8 +46,9 @@ export function FilterBar(props: Props) {
       </span>
       <span className="ml-auto">
         <Menu menuButton={MB} transition>
-          <MenuItem onClick={() => addAction()}>Add New Property</MenuItem>
-          <MenuItem onClick={() => deleteAction()}>Bulk Delete</MenuItem>
+          <MenuItem onClick={() => action("add")}>Add New Property</MenuItem>
+          <MenuItem onClick={() => action("delete")}>Bulk Delete</MenuItem>
+          <MenuItem onClick={() => action("update")}>Bulk Update</MenuItem>
         </Menu>
       </span>
     </div>

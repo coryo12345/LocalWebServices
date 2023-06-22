@@ -1,8 +1,11 @@
 import { computed, signal, useSignalEffect } from "@preact/signals";
 import { createContext } from "preact";
 import { Property, PropertyManager } from "localwebservices-sdk";
+import { useEventBus } from "./utils/bus";
 
 export function createState() {
+  const { emit } = useEventBus();
+
   const url = signal("http://localhost:8081");
 
   // ideally this client stuff would be moved into a separate service-esque file
@@ -40,6 +43,18 @@ export function createState() {
     return await client.value.setProperty(key, value);
   }
 
+  /**
+   * @returns true if all keys were successfully deleted, false if not
+   */
+  async function deleteProperties(keys: string[]): Promise<boolean> {
+    const promises = [];
+    for (const key of keys) {
+      promises.push(client.value.deleteProperty(key));
+    }
+    const responses = await Promise.all(promises);
+    return !responses.filter((resp) => !resp).length;
+  }
+
   return {
     url,
     searchText,
@@ -49,6 +64,7 @@ export function createState() {
     filteredProperties,
     fetchProperties,
     addProperty,
+    deleteProperties,
   };
 }
 

@@ -22,7 +22,7 @@ export function ConnectionHeader() {
           type="submit"
           className="py-1 px-2 rounded border bg-blue-700 text-white"
         >
-          Submit
+          Fetch Properties
         </button>
       </form>
     </div>
