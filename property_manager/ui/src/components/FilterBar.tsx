@@ -1,7 +1,7 @@
 import { Menu, MenuButton, MenuItem } from "@szhsin/react-menu";
 import { useContext } from "preact/hooks";
-import { ListAction } from "../models";
 import { AppState } from "../state";
+import { ListAction } from "./base/DataTable";
 
 interface Props {
   onAction?: (action: ListAction) => void;
@@ -12,6 +12,10 @@ export function FilterBar(props: Props) {
 
   function deleteAction() {
     typeof props.onAction === "function" && props.onAction("delete");
+  }
+
+  function addAction() {
+    typeof props.onAction === "function" && props.onAction("add");
   }
 
   return (
@@ -46,6 +50,7 @@ export function FilterBar(props: Props) {
       </span>
       <span className="ml-auto">
         <Menu menuButton={MB} transition>
+          <MenuItem onClick={() => addAction()}>Add New Property</MenuItem>
           <MenuItem onClick={() => deleteAction()}>Bulk Delete</MenuItem>
         </Menu>
       </span>

@@ -1,18 +1,32 @@
-import { useContext } from "preact/hooks";
-import { DataTable, ListAction } from "./DataTable";
-import { AppState } from "../state";
 import { useSignal } from "@preact/signals";
-import { FilterBar } from "./FilterBar";
 import type { Property } from "localwebservices-sdk";
+import { useContext } from "preact/hooks";
+import { AppState } from "../state";
+import { FilterBar } from "./FilterBar";
+import { DataTable, ListAction } from "./base/DataTable";
+import { ADD_PROPERTY_EVENT, AddPropertyDialog } from "./AddPropertyDialog";
+import { useEventBus } from "../utils/bus";
 
 export function PropertyList() {
   const state = useContext(AppState);
+  const { emit } = useEventBus();
 
   const selectedProperties = useSignal<Property[]>([]);
 
   function handleAction(action: ListAction) {
-    // TODO: handle actions using SDK
-    console.log(action);
+    switch (action) {
+      case "add":
+        emit(ADD_PROPERTY_EVENT);
+        break;
+      case "delete":
+        // use selectedProperties to delete items
+        break;
+      case "update":
+        // use selectedProperties to update values
+        break;
+      default:
+        break;
+    }
   }
 
   return (
@@ -24,6 +38,7 @@ export function PropertyList() {
           onSelect={(items) => (selectedProperties.value = items)}
         />
       </div>
+      <AddPropertyDialog />
     </>
   );
 }

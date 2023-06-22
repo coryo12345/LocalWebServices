@@ -1,7 +1,6 @@
 import { computed, signal, useSignalEffect } from "@preact/signals";
-import { Property } from "./models";
 import { createContext } from "preact";
-import { PropertyManager } from "localwebservices-sdk";
+import { Property, PropertyManager } from "localwebservices-sdk";
 
 export function createState() {
   const url = signal("http://localhost:8081");
