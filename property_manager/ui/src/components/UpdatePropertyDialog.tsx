@@ -33,11 +33,11 @@ export function UpdatePropertyDialog() {
       dialogValue.value = false;
       emit(
         events.SNACKBAR_ERROR,
-        "Something went wrong, Unable to update properties"
+        "Something went wrong, Unable to update property"
       );
     } else {
       dialogValue.value = false;
-      emit(events.SNACKBAR_SUCCESS, "Successfully updated properties");
+      emit(events.SNACKBAR_SUCCESS, "Successfully updated property");
       await state.fetchProperties();
     }
   }
@@ -46,7 +46,7 @@ export function UpdatePropertyDialog() {
     <Dialog
       value={dialogValue.value}
       hideActivator={true}
-      title="Update Properties"
+      title="Update Property"
       onValueChange={(val) => (dialogValue.value = val)}
       actionButtons={
         <button

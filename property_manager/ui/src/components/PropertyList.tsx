@@ -8,8 +8,9 @@ import {
   UPDATE_PROPERTY_EVENT,
   UpdatePropertyDialog,
 } from "./UpdatePropertyDialog";
-import { FilterBar } from "./FilterBar";
-import { DataTable, ListAction } from "./base/DataTable";
+import { FilterBar, ListAction } from "./FilterBar";
+import { DataTable } from "./base/DataTable";
+import { JSX } from "preact/jsx-runtime";
 
 export function PropertyList() {
   const state = useContext(AppState);
@@ -45,6 +46,24 @@ export function PropertyList() {
     state.fetchProperties();
   }
 
+  function setProperty(item: Property) {
+    emit(UPDATE_PROPERTY_EVENT, [item.key]);
+  }
+
+  function generateSlots(key: string, item: Property): JSX.Element | null {
+    if (key === "value") {
+      return (
+        <div>
+          {item.value}{" "}
+          <span class="cursor-pointer" onClick={() => setProperty(item)}>
+            ✎
+          </span>
+        </div>
+      );
+    }
+    return null;
+  }
+
   return (
     <>
       <FilterBar onAction={handleAction} />
@@ -52,6 +71,7 @@ export function PropertyList() {
         <DataTable
           items={state.filteredProperties.value}
           onSelect={(items) => (selectedProperties.value = items)}
+          slots={generateSlots}
         />
       </div>
       <AddPropertyDialog />

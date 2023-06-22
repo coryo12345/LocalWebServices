@@ -1,8 +1,7 @@
 import { useComputed, useSignal } from "@preact/signals";
 import { Property } from "localwebservices-sdk";
 import { useEffect } from "preact/hooks";
-
-export type ListAction = "delete" | "add" | "update";
+import { JSX } from "preact/jsx-runtime";
 
 interface Item extends Property {
   selected?: boolean;
@@ -11,9 +10,9 @@ interface Item extends Property {
 interface Props {
   items: Item[];
   onSelect?: (items: Item[]) => void;
+  slots?: (key: string, item: Item) => JSX.Element | null;
 }
 
-// TODO column sorting
 export function DataTable(props: Props) {
   const _items = useSignal<Item[]>([]);
 
@@ -84,8 +83,12 @@ export function DataTable(props: Props) {
                 onChange={() => selectHandler(index)}
               />
             </td>
-            <td className="text-center py-1 px-2">{item.key}</td>
-            <td className="text-center py-1 px-2">{item.value}</td>
+            <td className="text-center py-1 px-2">
+              {(props.slots && props.slots("key", item)) ?? item.key}
+            </td>
+            <td className="text-center py-1 px-2">
+              {(props.slots && props.slots("value", item)) ?? item.value}
+            </td>
           </tr>
         ))}
       </tbody>

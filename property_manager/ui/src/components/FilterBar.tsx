@@ -1,7 +1,8 @@
 import { Menu, MenuButton, MenuItem } from "@szhsin/react-menu";
 import { useContext } from "preact/hooks";
 import { AppState } from "../state";
-import { ListAction } from "./base/DataTable";
+
+export type ListAction = "delete" | "add" | "update";
 
 interface Props {
   onAction?: (action: ListAction) => void;
