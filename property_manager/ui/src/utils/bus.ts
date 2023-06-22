@@ -1,27 +1,27 @@
 type Callback = (...args: any) => void;
-const events = new Map<string, Callback[]>();
+const eventMap = new Map<string, Callback[]>();
 
 export function useEventBus() {
   const on = (event: string, cb: Callback) => {
-    let list = events.get(event);
+    let list = eventMap.get(event);
     if (list) {
       list.push(cb);
     } else {
       list = [cb];
-      events.set(event, list);
+      eventMap.set(event, list);
     }
   };
 
   const emit = (event: string, ...data: any) => {
-    const list = events.get(event);
+    const list = eventMap.get(event);
     if (!list) return;
     for (const cb of list) {
-      cb(data);
+      cb(...data);
     }
   };
 
   const clear = (event: string) => {
-    events.delete(event);
+    eventMap.delete(event);
   };
 
   return {
@@ -30,3 +30,10 @@ export function useEventBus() {
     clear,
   };
 }
+
+export const events = {
+  SNACKBAR_SUCCESS: "snackbar-event-success",
+  SNACKBAR_ERROR: "snackbar-event-error",
+  SNACKBAR_INFO: "snackbar-event-info",
+  SNACKBAR_WARNING: "snackbar-event-warning",
+};

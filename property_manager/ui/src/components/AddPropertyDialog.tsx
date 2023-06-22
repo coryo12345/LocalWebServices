@@ -1,12 +1,14 @@
 import { useComputed, useSignal } from "@preact/signals";
-import { useEffect } from "preact/hooks";
-import { useEventBus } from "../utils/bus";
+import { useContext, useEffect } from "preact/hooks";
+import { events, useEventBus } from "../utils/bus";
 import { Dialog } from "./base/Dialog";
+import { AppState } from "../state";
 
 export const ADD_PROPERTY_EVENT = "add-property-dialog-event";
 
 export function AddPropertyDialog() {
-  const { on } = useEventBus();
+  const { on, emit } = useEventBus();
+  const state = useContext(AppState);
 
   const dialogValue = useSignal(false);
 
@@ -25,9 +27,19 @@ export function AddPropertyDialog() {
     return !keyText.value.length || !valueText.value.length;
   });
 
-  function submit() {
-    // TODO add this property
-    console.log(keyText.value, valueText.value);
+  async function submit() {
+    const res = await state.addProperty(keyText.value, valueText.value);
+    if (res === null) {
+      dialogValue.value = false;
+      emit(
+        events.SNACKBAR_ERROR,
+        "Something went wrong, Unable to add new property"
+      );
+    } else {
+      dialogValue.value = false;
+      emit(events.SNACKBAR_SUCCESS, "Successfully added new property");
+      await state.fetchProperties();
+    }
   }
 
   return (

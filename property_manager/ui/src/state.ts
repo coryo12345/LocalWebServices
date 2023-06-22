@@ -4,6 +4,10 @@ import { Property, PropertyManager } from "localwebservices-sdk";
 
 export function createState() {
   const url = signal("http://localhost:8081");
+
+  // ideally this client stuff would be moved into a separate service-esque file
+  // and the url / connection handling would be much more graceful.
+  // but the scope of this is small enough to just keep it here for now
   const client = signal({} as ReturnType<typeof PropertyManager>);
   useSignalEffect(() => {
     client.value = PropertyManager(url.value);
@@ -29,6 +33,13 @@ export function createState() {
     properties.value = await client.value.getAllProperties();
   }
 
+  async function addProperty(
+    key: string,
+    value: string
+  ): Promise<string | null> {
+    return await client.value.setProperty(key, value);
+  }
+
   return {
     url,
     searchText,
@@ -37,6 +48,7 @@ export function createState() {
     properties,
     filteredProperties,
     fetchProperties,
+    addProperty,
   };
 }
 

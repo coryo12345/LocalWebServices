@@ -1,5 +1,6 @@
 import { ConnectionHeader } from "./components/ConnectionHeader";
 import { PropertyList } from "./components/PropertyList";
+import { Snackbar } from "./components/base/Snackbar";
 import { AppState, createState } from "./state";
 
 export function App() {
@@ -10,6 +11,7 @@ export function App() {
         <hr />
         <PropertyList />
       </div>
+      <Snackbar />
     </AppState.Provider>
   );
 }

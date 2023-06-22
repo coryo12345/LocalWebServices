@@ -2,10 +2,10 @@ import { useSignal } from "@preact/signals";
 import type { Property } from "localwebservices-sdk";
 import { useContext } from "preact/hooks";
 import { AppState } from "../state";
+import { useEventBus } from "../utils/bus";
+import { ADD_PROPERTY_EVENT, AddPropertyDialog } from "./AddPropertyDialog";
 import { FilterBar } from "./FilterBar";
 import { DataTable, ListAction } from "./base/DataTable";
-import { ADD_PROPERTY_EVENT, AddPropertyDialog } from "./AddPropertyDialog";
-import { useEventBus } from "../utils/bus";
 
 export function PropertyList() {
   const state = useContext(AppState);
