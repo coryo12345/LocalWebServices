@@ -3,3 +3,5 @@ go 1.19
 use ./queue/service
 
 use ./property_manager/service
+
+use ./file_storage/service
