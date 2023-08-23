@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 type FileManager struct {
@@ -64,13 +65,53 @@ func (fm *FileManager) ListAllFiles(path string) ([]File, error) {
 			continue
 		}
 
+		fileAbsPath := filepath.Join(fullPath, v.Name())
+		fileRelPath, err := filepath.Rel(fm.directory, fileAbsPath)
+		if err != nil {
+			continue
+		}
+
 		files = append(files, File{
 			Name:         v.Name(),
 			Size:         info.Size(),
 			IsDir:        v.IsDir(),
 			LastModified: info.ModTime(),
+			RelativePath: fileRelPath,
+			RealFile:     true,
+		})
+	}
+
+	if path != "" && path != "/" && path != "./" && path != "." {
+		files = append(files, File{
+			Name:         "..",
+			Size:         0,
+			IsDir:        true,
+			LastModified: time.Now(),
+			RelativePath: "",
+			RealFile:     false,
 		})
 	}
 
 	return files, nil
+}
+
+func (fm *FileManager) CheckFileIsDir(path string) (bool, error) {
+	fullPath := filepath.Join(fm.directory, path)
+
+	result, err := os.Stat(fullPath)
+	if err != nil {
+		return false, err
+	}
+
+	if result.IsDir() {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (fm *FileManager) GetFileBytes(path string) ([]byte, error) {
+	fullPath := filepath.Join(fm.directory, path)
+
+	data, err := os.ReadFile(fullPath)
+	return data, err
 }

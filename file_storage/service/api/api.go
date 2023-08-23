@@ -7,11 +7,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 const (
-	DEFAULT_API_PORT = "8081"
-	ENV_API_PORT     = "API_PORT"
+	DEFAULT_API_PORT     = "8081"
+	ENV_API_PORT         = "API_PORT"
+	INVALID_REQUEST_PATH = "Invalid request path"
 )
 
 type allSingletons struct {
@@ -41,7 +43,7 @@ func StartApi(fileManager *manager.FileManager) {
 }
 
 func handleDirRequest(w http.ResponseWriter, r *http.Request, singletons allSingletons) {
-	log.Printf("Received request: %s /dir\n", r.Method)
+	log.Printf("Received request: %s /dir - path=%s\n", r.Method, r.URL.Query().Get("path"))
 	switch r.Method {
 	case http.MethodGet:
 		ListFilesHandler(w, r, singletons)
@@ -51,10 +53,16 @@ func handleDirRequest(w http.ResponseWriter, r *http.Request, singletons allSing
 }
 
 func ListFilesHandler(w http.ResponseWriter, r *http.Request, singletons allSingletons) {
-	// TODO get path from query param
-	path := ""
+	path := r.URL.Query().Get("path")
 
-	files, err := singletons.fileManager.ListAllFiles(path)
+	clean := filepath.Clean(path)
+	local := filepath.IsLocal(clean)
+	if !local {
+		http.Error(w, INVALID_REQUEST_PATH, http.StatusBadRequest)
+		return
+	}
+
+	files, err := singletons.fileManager.ListAllFiles(clean)
 	if err != nil {
 		http.Error(w, "Unable to list files", http.StatusInternalServerError)
 		return
@@ -70,7 +78,7 @@ func ListFilesHandler(w http.ResponseWriter, r *http.Request, singletons allSing
 }
 
 func handleFileRequest(w http.ResponseWriter, r *http.Request, singletons allSingletons) {
-	log.Printf("Received request: %s /file\n", r.Method)
+	log.Printf("Received request: %s /file - path=%s\n", r.Method, r.URL.Query().Get("path"))
 	switch r.Method {
 	case http.MethodGet:
 		DownloadFileHandler(w, r, singletons)
@@ -83,8 +91,57 @@ func handleFileRequest(w http.ResponseWriter, r *http.Request, singletons allSin
 	}
 }
 
-func DownloadFileHandler(w http.ResponseWriter, r *http.Request, singletons allSingletons) {}
+func DownloadFileHandler(w http.ResponseWriter, r *http.Request, singletons allSingletons) {
+	path := r.URL.Query().Get("path")
+	clean := filepath.Clean(path)
+	local := filepath.IsLocal(clean)
 
-func UploadFileHandler(w http.ResponseWriter, r *http.Request, singletons allSingletons) {}
+	if !local {
+		http.Error(w, INVALID_REQUEST_PATH, http.StatusBadRequest)
+		return
+	}
 
-func DeleteFileHandler(w http.ResponseWriter, r *http.Request, singletons allSingletons) {}
+	isDir, err := singletons.fileManager.CheckFileIsDir(clean)
+	if err != nil {
+		http.Error(w, "File not found", http.StatusNotFound)
+		return
+	}
+
+	if isDir {
+		http.Error(w, "Downloading directories is not supported", http.StatusBadRequest)
+		return
+	}
+
+	fileData, err := singletons.fileManager.GetFileBytes(clean)
+
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	fileName := filepath.Base(clean)
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename=\""+fileName+"\"")
+	w.WriteHeader(http.StatusOK)
+	w.Write(fileData)
+}
+
+func DeleteFileHandler(w http.ResponseWriter, r *http.Request, singletons allSingletons) {
+	path := r.URL.Query().Get("path")
+
+	clean := filepath.Clean(path)
+	local := filepath.IsLocal(clean)
+	if !local {
+		http.Error(w, INVALID_REQUEST_PATH, http.StatusBadRequest)
+		return
+	}
+
+	// TODO continue this
+
+	// stub
+}
+
+func UploadFileHandler(w http.ResponseWriter, r *http.Request, singletons allSingletons) {
+	// stub
+}
