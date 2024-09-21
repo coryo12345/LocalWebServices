@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"localwebservices/common"
 	"localwebservices/propertystore"
+	"localwebservices/taskqueue"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,9 +18,11 @@ func main() {
 	// create services
 	services := make(map[string]common.Service)
 	services["propStore"] = propertystore.NewPropertyStore("properties")
+	services["taskQueue"] = taskqueue.NewTaskQueue("queue")
 
 	// start services
 	handleServiceError(services["propStore"].Start("/api/propertystore"))
+	handleServiceError(services["taskQueue"].Start("/api/taskqueue"))
 
 	// handle shutdown
 	c := make(chan os.Signal, 1)
@@ -37,7 +40,7 @@ func main() {
 
 func handleServiceError(err error) {
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		os.Exit(1)
 	}
 }

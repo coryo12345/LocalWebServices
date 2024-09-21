@@ -30,6 +30,7 @@ func NewPropertyStore(storeName string) common.Service {
 }
 
 func (s *PropertyStore) Start(urlPrefix string) error {
+	log.Printf("Starting property store: %s\n", s.storeName)
 	dir, err := os.Getwd()
 	if err != nil {
 		return err
